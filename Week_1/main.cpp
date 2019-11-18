@@ -1,87 +1,103 @@
 using namespace std;
 #include <iostream>
 #include "SFML/Graphics.hpp"
+#include "objects.hpp"
+#include "circle.hpp"
+#include "rectangle.hpp"
+using namespace std;
 
-int main(int argc, char **argv){
 
-   //Make the window.
-   sf::RenderWindow window(sf::VideoMode(800,600), "SFML window");
+int main(){
 
-   //Make a vector for easy adding and drawing objects.
-   std::vector<sf::RectangleShape> shapes;
+   //Make the window
+   sf::RenderWindow window{ sf::VideoMode{640,480}, "Week 01"};
 
-   //Create the objects
-   sf::RectangleShape leftWall(sf::Vector2f(10,590));
-   sf::RectangleShape rightWall(sf::Vector2f(10,590));
-   sf::RectangleShape topWall(sf::Vector2f(790,10));
-   sf::RectangleShape bottomWall(sf::Vector2f(790,10));
-   sf::RectangleShape randomBlock(sf::Vector2f(75,75));
-   sf::CircleShape circle(20);
+   //Make Colors
+   sf::Color color01 = sf::Color(150,0,0);
+   sf::Color color02 = sf::Color(250,0,200);
 
-   //Set positions of the Walls.
-   leftWall.setPosition(0,10);
-   topWall.setPosition(0,0);
-   rightWall.setPosition(790,0);
-   bottomWall.setPosition(10,590);
+   //Make Objects
+   Circle circle        {sf::Vector2f{320,240}, sf::Vector2f{3,7}};
+   Rectangle topWall    {sf::Vector2f{0,0}, color01, sf::Vector2f {640,30}};
+   Rectangle bottomWall {sf::Vector2f{0, 450}, color01, sf::Vector2f{640, 30}};
+   Rectangle leftWall   {sf::Vector2f{0, 0}, color01, sf::Vector2f{30, 480}};
+   Rectangle rightWall  {sf::Vector2f{610, 0}, color01, sf::Vector2f{30, 480}};
+   Rectangle middleRect {sf::Vector2f{80,80} , color02, sf::Vector2f{270,30}};
 
-   int blockX = 400;
-   int blockY = 300;
-   randomBlock.setPosition(blockX,blockY);
+   sf::Rect<float> intersectionRect;
+   intersectionRect.width = 0;
+   intersectionRect.height = 0;  
 
-   int circleX = 20;
-   int circleY = 20;
-   circle.setPosition(circleX,circleY);
+   window.clear();
 
-   //Add objects to the vector
-   shapes.push_back(leftWall);
-   shapes.push_back(rightWall);
-   shapes.push_back(topWall);
-   shapes.push_back(bottomWall);
+   circle.draw(window);
+   
+   //List with all included
+   Rectangle * rectangleList[5] = { &topWall, &bottomWall, &leftWall, &rightWall, &middleRect};
 
-   //Draw all the objects before starting
-   for (const auto & x : shapes){ window.draw(x); }
+   for(auto x : rectangleList){
+      x -> draw(window);
+   }
 
-   //Showing the window and actions.
+   window.display();
+
    while(window.isOpen()){
       sf::Event event;
-      while (window.pollEvent(event))
-      {
-         if (event.type == sf::Event::Closed){
-            window.close();
-         }
+      if (event.type == sf::Event::Closed){
+         window.close();
       }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) { middleRect.move(sf::Vector2f{-7,0});}
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){middleRect.move(sf::Vector2f{+7, 0});}
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){middleRect.move(sf::Vector2f{0, -7});}
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){middleRect.move(sf::Vector2f{0, +7});}
 
-      if(event.type == sf::Event::KeyPressed){
-         switch (event.key.code){
-         case 71:
-            randomBlock.setPosition(blockX--,blockY);
-            break;
-         case 72:
-            randomBlock.setPosition(blockX++,blockY);            
-            break;
-         case 73:
-            randomBlock.setPosition(blockX,blockY--);            
-            break;
-         case 74: 
-            randomBlock.setPosition(blockX,blockY++);
-            break;
-         default:
-            break;
+      circle.update();
+
+      for (int i = 0; i < 5; i++)
+      {
+         if (circle.getGlobalBounds().intersects(rectangleList[i]->getGlobalBounds(), intersectionRect))
+         {
+
+            if (int(circle.getPosition().x) == int(intersectionRect.left) && intersectionRect.height == circle.getSize() * 2)
+            {
+               std::cout << "leeeeft";
+               circle.bounce(sf::Vector2f{-1,1});
+               while ((intersectionRect.width < 59 && intersectionRect.width > 7) || (intersectionRect.height < 59 && intersectionRect.height > 7))
+               {
+                  circle.update();
+                  circle.getGlobalBounds().intersects(rectangleList[i]->getGlobalBounds(), intersectionRect);
+               }
+            }
+            else if (int(circle.getPosition().x + int(circle.getSize() * 2) - 1) == int(intersectionRect.left))
+            {
+               std::cout << "riiiiight";
+               circle.bounce(sf::Vector2f{-1, 1});
+               while ((intersectionRect.width < 59 && intersectionRect.width > 7) || (intersectionRect.height < 59 && intersectionRect.height > 7))
+               {
+                  circle.update();
+                  circle.getGlobalBounds().intersects(rectangleList[i]->getGlobalBounds(), intersectionRect);
+               }
+            }
+            else
+            {
+               circle.bounce(sf::Vector2f{1, -1});
+               while ((intersectionRect.width < 59 && intersectionRect.width > 7) || (intersectionRect.height < 59 && intersectionRect.height > 7))
+               {
+                  circle.update();
+                  circle.getGlobalBounds().intersects(rectangleList[i]->getGlobalBounds(), intersectionRect);
+               }
+            }
          }
       }
 
       window.clear();
-
-      circle.setPosition(circleX++,circleY++);
-      
-      for (const auto & x : shapes){
-         window.draw(x);
+      circle.draw(window);
+      for (auto x : rectangleList)
+      {
+         x->draw(window);
       }
-
-      window.draw(circle);
-      window.draw(randomBlock);
       window.display();
-      sf::sleep(sf::milliseconds(10));
+      sf::sleep(sf::milliseconds(20));
    }
-   return EXIT_SUCCESS;
+   return 0;
 }
