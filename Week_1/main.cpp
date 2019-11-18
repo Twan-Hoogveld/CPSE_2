@@ -60,7 +60,6 @@ int main(){
 
             if (int(circle.getPosition().x) == int(intersectionRect.left) && intersectionRect.height == circle.getSize() * 2)
             {
-               std::cout << "leeeeft";
                circle.bounce(sf::Vector2f{-1,1});
                while ((intersectionRect.width < 59 && intersectionRect.width > 7) || (intersectionRect.height < 59 && intersectionRect.height > 7))
                {
@@ -70,7 +69,6 @@ int main(){
             }
             else if (int(circle.getPosition().x + int(circle.getSize() * 2) - 1) == int(intersectionRect.left))
             {
-               std::cout << "riiiiight";
                circle.bounce(sf::Vector2f{-1, 1});
                while ((intersectionRect.width < 59 && intersectionRect.width > 7) || (intersectionRect.height < 59 && intersectionRect.height > 7))
                {
