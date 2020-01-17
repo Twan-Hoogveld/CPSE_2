@@ -1,3 +1,0 @@
-(148,230) CIRCLE blue 10
-(318,213) RECTANGLE red (30,40) 
-(110,50) PICTURE bird.jpg

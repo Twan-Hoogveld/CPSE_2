@@ -1,0 +1,3 @@
+(4,25) CIRCLE blue 30
+(352,275) RECTANGLE red (30,30)
+(562.5,38.5) PICTURE image.jpeg
