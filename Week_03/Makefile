@@ -28,6 +28,6 @@ SEARCH  :=
 RELATIVE := $(RELATIVE)../../v2cpse2-examples/
 include $(RELATIVE)Makefile.native
 
-schoon:
+clean:
 	make clean
 	rm -f main
