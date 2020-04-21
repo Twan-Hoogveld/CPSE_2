@@ -1,0 +1,4 @@
+(398,274) CIRCLE blue 80
+(142,312) RECTANGLE cyan (242,392)
+(222,136) PICTURE star.png
+(498,124) LINE red (540,172)
